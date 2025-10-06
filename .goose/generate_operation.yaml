@@ -1,0 +1,70 @@
+version: 1.0.0
+title: Generate an operation from your graph
+description: a custom recipe instance from this chat session
+instructions: To gather information from a GraphQL API, first identify the root query field using the introspection tool, then utilize the search tool to explore relevant return types and input types associated with your query. Create a GraphQL operation for the desired data, ensuring to format it correctly, and validate the operation using the validate tool. Repeat the validation process as necessary until the operation is confirmed as valid.
+prompt: >
+  User: {{user_input}} 
+  
+  Generate me an operation for the {{extension}} server. Use the following flow:
+  
+  - Use the introspection tool with a depth of 1 to find the root query field 
+  - Use the search tool (1-2 times max) to gather information about the relevant return types and input types from the previous step.
+    - Never repeat search terms when re-executing the search tool. 
+  - Once you have all of the necessary information, generate an opreration and then use the validate tool to ensure it is correct. 
+    - Fix any validation errors and re-execute the validate tool until it passes.
+    - There should be a descriptive graphql comment above the operation that states what the operation does 
+    - Optional parameters can be added to enable more filtering capabilities in the tool. 
+    - Any added parameters should have a comment on the line above the definition that will be the tool argument description. 
+  - Once you have the finished defintion, save it to the `{PWD}/mcp/operations` folder with a descriptive name as a `.graphql` file.
+parameters:
+- key: extension
+  input_type: string
+  requirement: user_prompt
+  description: name of server/extension you named in goose configuration
+- key: user_input
+  input_type: string
+  requirement: user_prompt
+  description: what you want to do with the graph
+extensions:
+- type: builtin
+  name: memory
+  display_name: Memory
+  description: null
+  timeout: 300
+  bundled: true
+  available_tools: []
+- type: builtin
+  name: developer
+  display_name: Developer
+  description: null
+  timeout: 300
+  bundled: true
+  available_tools: []
+- type: builtin
+  name: computercontroller
+  display_name: Computer Controller
+  description: null
+  timeout: 300
+  bundled: true
+  available_tools: []
+- type: streamable_http
+  name: hackathon
+  uri: http://localhost:5000/mcp
+  envs: {}
+  env_keys: []
+  headers: {}
+  description: null
+  timeout: 300
+  bundled: null
+  available_tools: []
+settings:
+  goose_provider: openrouter
+  goose_model: anthropic/claude-sonnet-4
+  temperature: 0.0
+activities:
+- Fetch product details
+- Explore user data
+- Query available services
+- Retrieve order history
+author:
+  contact: michaelwatson

@@ -1,0 +1,6 @@
+{
+  "yaml.schemas": {
+    ".apollo/mcp.config.schema.json": "mcp.local.yaml",
+    ".apollo/router_config_schema.json": "router.yaml"
+  }
+}

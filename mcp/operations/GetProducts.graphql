@@ -1,0 +1,9 @@
+# This operation retrieves a list of products with their names and descriptions.
+#This operation takes and option int value parameter of limit that will default to 3.
+query GetProducts($limit: Int = 3) {
+  products(limit: $limit) {
+    id
+    name
+    description
+  }
+}
