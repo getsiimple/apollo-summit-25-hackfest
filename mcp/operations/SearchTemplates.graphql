@@ -1,0 +1,25 @@
+# This operation searches website templates by keyword or business type.
+# Use this when users ask about templates for specific businesses (therapist, locksmith, restaurant, etc.) or search for template features.
+# Parameters: query (required search term like "locksmith", "therapist", "restaurant")
+# 
+# RESPONSE FORMAT: Present results in a friendly, conversational way:
+# "I found the [name] template that would be perfect for your [business type] website. 
+# [description]
+# 
+# You can start building your site with this template: https://app.getsiimple.com/signup?demo={objectID}
+# 
+# This template includes keywords: [keywords]"
+# 
+# If multiple results, list them with bullet points and signup links for each.
+query SearchTemplates($query: String!) {
+  searchTemplates(query: $query) {
+    objectID
+    name
+    description
+    theme
+    demoUrl
+    keywords
+    siteId
+    image
+  }
+}

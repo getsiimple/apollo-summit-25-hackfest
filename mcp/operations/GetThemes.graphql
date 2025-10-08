@@ -1,0 +1,15 @@
+# This operation lists all available website templates without filtering.
+# Use this when users ask to see all templates, browse templates, or don't specify a particular type of business.
+# Parameters: hitsPerPage (optional, default 20)
+query GetTemplates($hitsPerPage: Int = 20) {
+  templates(hitsPerPage: $hitsPerPage) {
+    objectID
+    name
+    description
+    theme
+    demoUrl
+    keywords
+    siteId
+    image
+  }
+}

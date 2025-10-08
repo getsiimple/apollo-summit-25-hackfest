@@ -1,0 +1,16 @@
+# This operation retrieves a specific Intercom help article by its ID.
+# Use this when users need detailed information about a specific article or when following up on a search result.
+# Parameters: id (required article ID)
+query GetArticle($id: String!) {
+  article(id: $id) {
+    id
+    type
+    title
+    description
+    body
+    state
+    created_at
+    updated_at
+    url
+  }
+}

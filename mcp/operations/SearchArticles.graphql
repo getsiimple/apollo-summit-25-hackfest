@@ -1,0 +1,37 @@
+# This operation searches Intercom help articles for specific topics or keywords.
+# ALWAYS use this automatically when users ask about:
+# - How to update, edit, or customize their website
+# - Changing colors, fonts, images, or content
+# - Adding features or functionality
+# - Questions starting with "how to", "how do I", "can I", "where can I"
+# - Any website management or customization tasks
+#
+# DO NOT ask if they want to search for articles - just search based on their question.
+# Parameters: phrase (required - extract key terms from their question), state (optional, default "published"), highlight (optional, default false)
+#
+# RESPONSE FORMAT: Present articles in a helpful way:
+# "I found [total_count] articles about [topic]. Here are the most relevant ones:
+#
+# 📄 **[title]**
+# [description]
+# 
+# [Show first paragraph or key points from body]
+#
+# If no results: "I couldn't find any specific articles about [topic], but you might want to try searching for [alternative terms] or contact support."
+query SearchArticles($phrase: String!, $state: String, $highlight: Boolean) {
+  searchArticles(phrase: $phrase, state: $state, highlight: $highlight) {
+    type
+    total_count
+    pages
+    data {
+      id
+      title
+      description
+      body
+      state
+      url
+      created_at
+      updated_at
+    }
+  }
+}

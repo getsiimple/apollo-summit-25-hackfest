@@ -12,7 +12,7 @@ async function getMCPClient() {
   if (mcpClient) return mcpClient;
 
   const transport = new StreamableHTTPClientTransport(
-    new URL("http://localhost:5000/mcp")
+    new URL("http://localhost:5001/mcp")
   );
 
   mcpClient = await experimental_createMCPClient({

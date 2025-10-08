@@ -13,48 +13,215 @@ extend schema
     import: ["@connect", "@source"]
   )
 
-# ✏️ This schema is using a demo REST API as its @source. Replace the `name` and `baseURL` of it with your own REST API.
+# This schema connects to the Algolia Search API for Siimple templates
 @source(
-  name: "ecomm"
+  name: "algolia"
   # A @source directive defines a shared data source for multiple Connectors.
   http: {
-    baseURL: "https://ecommerce.demo-api.apollo.dev/" 
+    baseURL: "https://9UHBKTAEPW.algolia.net" 
     headers: [
-      # If your API requires headers, add them here and in your router.yaml file.
-      # Example:
-      # { name: "name", value: "{$config.apiKey}" }
+      { name: "Content-Type", value: "application/json" },
+      { name: "X-Algolia-Application-Id", value: "9UHBKTAEPW" },
+      { name: "X-Algolia-API-Key", value: "d9c3eef0a2f40553f632c84939ce6793" }
     ]
   }
 )
 
-# ✏️ Replace this example type with your own object type.
-type Product {
-  id: ID!
-  name: String
+# This schema connects to the Intercom Articles API for documentation
+@source(
+  name: "intercom"
+  http: {
+    baseURL: "https://api.intercom.io"
+    headers: [
+      { name: "Content-Type", value: "application/json" },
+      { name: "Accept", value: "application/json" },
+      { name: "Authorization", value: "Bearer {$env.INTERCOM_ACCESS_TOKEN}" }
+    ]
+  }
+)
+
+# Template data from Algolia search results
+type Template {
+  objectID: String!
+  name: String!
   description: String
+  theme: String
+  demoUrl: String
+  keywords: String
+  siteId: String
+  image: String
 }
 
-# ✏️ Set up your Query field with the endpoint that returns the data you want.
+# Intercom Article
+type Article {
+  id: String!
+  type: String!
+  workspace_id: String!
+  title: String!
+  description: String
+  body: String
+  author_id: String!
+  state: String!
+  created_at: Int!
+  updated_at: Int!
+  url: String
+  parent_id: String
+  parent_ids: [String]
+  parent_type: String
+  default_locale: String
+}
+
+# Intercom Articles List Response
+type ArticlesResponse {
+  type: String!
+  total_count: Int!
+  pages: Int
+  data: [Article]
+}
 
 type Query {
-  # The Query.products field uses @connect to connect to the /products endpoint in the "ecomm" source.
-  # To check out the JSON response for this endpoint, go to 🔗 https://ecommerce.demo-api.apollo.dev/products.
-  products(limit: Int = 3): [Product]
-    # A @connect directive defines the API data source of a GraphQL schema field.
+  # Browse all templates from Algolia
+  templates(hitsPerPage: Int = 20): [Template]
     @connect(
-      source: "ecomm"
+      source: "algolia"
       http: {
-        GET: "/products"
-        queryParams: "limit: $args.limit->match([null, 3], [@, @])"
-      } # GET, POST, PUT, PATCH, DELETE.
-      # Use @connect for any field that should be resolved by your REST API endpoints.
-      # Use the selection argument to map fields from the JSON response to the type.
-      # You can do more with this selection mapping. Learn more at 🔗 https://www.apollographql.com/docs/graphos/schema-design/connectors/responses
+        GET: "/1/indexes/demoSites/browse"
+        queryParams: "hitsPerPage: $args.hitsPerPage->match([null, 20], [@, @])"
+      }
       selection: """
-      $.products {
-        id
+      $.hits {
+        objectID
         name
         description
+        theme
+        demoUrl
+        keywords
+        siteId
+        image
+      }
+      """
+    )
+  
+  # Search templates using Algolia search
+  searchTemplates(query: String!): [Template]
+    @connect(
+      source: "algolia"
+      http: {
+        POST: "/1/indexes/demoSites/query"
+        body: """
+        $(
+          {
+            "query": $args.query
+          }
+        )
+        """
+      }
+      selection: """
+      $.hits {
+        objectID
+        name
+        description
+        theme
+        demoUrl
+        keywords
+        siteId
+        image
+      }
+      """
+    )
+  
+  # List all articles from Intercom
+  articles(phrase: String!,page: Int = 1, per_page: Int = 20): ArticlesResponse
+    @connect(
+      source: "intercom"
+      http: {
+        GET: "/articles/search"
+        queryParams: "$args { phrase page per_page }"
+      }
+      selection: """
+      $ {
+        type
+        total_count
+        pages: $.pages.total_pages
+        data: $.data.articles {
+          id
+          type
+          workspace_id
+          title
+          description
+          body
+          author_id
+          state
+          created_at
+          updated_at
+          url
+          parent_id
+          parent_ids
+          parent_type
+          default_locale
+        }
+      }
+      """
+    )
+  
+  # Get a specific article by ID
+  article(id: String!): Article
+    @connect(
+      source: "intercom"
+      http: {
+        GET: "/articles/{$args.id}"
+      }
+      selection: """
+      $ {
+        id
+        type
+        workspace_id
+        title
+        description
+        body
+        author_id
+        state
+        created_at
+        updated_at
+        url
+        parent_id
+        parent_ids
+        parent_type
+        default_locale
+      }
+      """
+    )
+  
+  # Search articles in Intercom
+  searchArticles(phrase: String!, state: String = "published", highlight: Boolean = false): ArticlesResponse
+    @connect(
+      source: "intercom"
+      http: {
+        GET: "/articles/search"
+        queryParams: "$args { phrase state highlight }"
+      }
+      selection: """
+      $ {
+        type
+        total_count
+        pages: $.pages.total_pages
+        data: $.data.articles {
+          id
+          type
+          workspace_id
+          title
+          description
+          body
+          author_id
+          state
+          created_at
+          updated_at
+          url
+          parent_id
+          parent_ids
+          parent_type
+          default_locale
+        }
       }
       """
     )

@@ -1,0 +1,19 @@
+# This operation lists all Intercom help articles with pagination.
+# Use this when users want to browse documentation, get a list of all help articles, or see what documentation is available.
+# Parameters: page (optional, default 1), per_page (optional, default 20)
+query ListArticles($page: Int, $per_page: Int) {
+  articles(page: $page, per_page: $per_page) {
+    type
+    total_count
+    pages
+    data {
+      id
+      title
+      description
+      state
+      created_at
+      updated_at
+      url
+    }
+  }
+}

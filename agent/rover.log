@@ -1,0 +1,5 @@
+error: --url <SUBGRAPH_URL> is required when not attached to a TTY
+
+Usage: Rover [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
