@@ -72,6 +72,10 @@ This foundation enables:
 
 We've created a conversational front door to Siimple that helps users find the right template and get the help they need - all through natural language interaction in the hackfest chat UI.
 
+### Demo
+
+![Demo of the Siimple MCP chat interface](Screenshot_2025-10-08_at_9.04.52_AM.png)
+
 ## What's Next
 
 Our original vision was ambitious: create an MCP that could answer questions like "Show me landscapers in San Diego" by searching through actual Siimple customer websites. This would have transformed our platform into a discovery engine where potential customers could find inspiration from real businesses using our templates.
